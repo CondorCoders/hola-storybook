@@ -258,7 +258,7 @@ export const Completed = {
 
 #### 🥇 Ejercicio: Agrega una descripción a cada prop y al componente y asegúrate que renderice de manera correcta en la documentación.
 
-## 02 Estilos Globales y Decoradores
+## 02 Estilos Globales, Decoradores y Herramienta personalizada en el Toolbar
 
 ### Estilos Globales
 
@@ -336,3 +336,57 @@ const meta = {
 ```
 
 El orden en que colocarmos los decoradores definirán el orden de renderizado. El borde verde debería envolver el borde rojo.
+
+#### Dark y Light mode con Decorators
+
+Vamos a agregar más estilos a nuestro componente `ToDo` y los colores en darkmode.
+
+```ToDo.module.css
+.completed {
+    text-decoration: line-through;
+}
+
+.toDo {
+    background-color: var(--grey);
+    padding: 0.5rem;
+    color: var(--text);
+}
+```
+
+```index.css
+:root {
+  --primary: #1ea7fd;
+  --text: black;
+  --grey: #eee;
+}
+
+.dark-theme {
+  background-color: #121212;
+  --primary: #b4d7ff;
+  --text: white;
+  --grey: #282828
+}
+```
+
+Y creamos un decorador que contenga la version light y darkmode de nuestro componente.
+
+```ToDo.stories.tsx
+const meta = {
+  title: "Components/ToDo",
+  component: ToDo,
+  args: {
+    id: "1",
+    todo: "Hola Mundo",
+  },
+  decorators: [
+    (Story) => (
+      <div>
+        <Story />
+        <div className={"dark-theme"}>
+          <Story />
+        </div>
+      </div>
+    ),
+  ],
+} satisfies Meta<typeof ToDo>;
+```

@@ -10,7 +10,7 @@ export interface ToDoProps {
 export const ToDo = ({ id, todo, isCompleted = false }: ToDoProps) => {
   const [completed, setCompleted] = useState<boolean>(isCompleted);
   return (
-    <div>
+    <div className={styles.toDo}>
       <input
         type="checkbox"
         checked={completed}

@@ -10,13 +10,11 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div style={{ border: "2px solid red" }}>
+      <div>
         <Story />
-      </div>
-    ),
-    (Story) => (
-      <div style={{ border: "2px solid green" }}>
-        <Story />
+        <div className={"dark-theme"}>
+          <Story />
+        </div>
       </div>
     ),
   ],
