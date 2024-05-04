@@ -390,3 +390,36 @@ const meta = {
   ],
 } satisfies Meta<typeof ToDo>;
 ```
+
+Ahora vamos a hacer que este Decorator se aplique de manera global. Así todos los componentes renderizarán el light y dark mode sin tener que agregarlo en cada Story del componente. Movamos los decoradores de `ToDo.stories.tsx` a `preview.ts`. Recuerda que debes cambiar el archivo a `preview.tsx`
+
+```preview.tsx
+import type { Preview } from "@storybook/react";
+import "../src/index.css";
+import React from "react";
+
+const preview: Preview = {
+  parameters: {
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/i,
+      },
+    },
+  },
+  decorators: [
+    (Story) => (
+      <div>
+        <Story />
+        <div className={"dark-theme"}>
+          <Story />
+        </div>
+      </div>
+    ),
+  ],
+};
+
+export default preview;
+```
+
+Ahora todos los Stories de todos los componentes deben renderizar en light y dark mode.

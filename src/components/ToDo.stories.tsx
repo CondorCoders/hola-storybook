@@ -8,16 +8,6 @@ const meta = {
     id: "1",
     todo: "Hola Mundo",
   },
-  decorators: [
-    (Story) => (
-      <div>
-        <Story />
-        <div className={"dark-theme"}>
-          <Story />
-        </div>
-      </div>
-    ),
-  ],
 } satisfies Meta<typeof ToDo>;
 
 export default meta;
