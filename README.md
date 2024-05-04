@@ -423,3 +423,67 @@ export default preview;
 ```
 
 Ahora todos los Stories de todos los componentes deben renderizar en light y dark mode.
+
+#### Creamos una herramienta personalizada en el Toolbar
+
+Documentación Oficial: [Toolbars & globals](https://storybook.js.org/docs/essentials/toolbars-and-globals)
+
+Toolbar Annotations (Anotaciones en la Toolbar) son características que te permiten agregar información adicional y funcionalidades a la toolbar de Storybook. Estas anotaciones pueden incluir metadatos, controles interactivos y otros elementos que enriquecen la experiencia de desarrollo al visualizar tus historias.
+
+Para esto vamos a definir un tipo `theme` en GlobalTypes en el archivo `preview.tsx`
+
+```preview.tsx
+const preview: Preview = {
+  globalTypes: {
+    theme: {
+      description: "Dark or Light mode",
+      defaultValue: "light",
+      toolbar: {
+        title: "Theme",
+        icon: "circlehollow",
+        items: ["light", "dark", "both"],
+        dynamicTitle: true,
+      },
+    },
+  },
+  ...
+};
+```
+
+📖 [Íconos disponibles para el toolbar](https://storybook.js.org/docs/faq#what-icons-are-available-for-my-toolbar-or-my-addon)
+
+Ahora deberías ver una nueva herramienta en el Toolbar arriba de tus componentes con el nombre "light". Al darle click debes tener las opciones "dark" y "both". Sin embargo esto todavía no está conectado con nuestras Stories.
+
+Ahora consumamos esta data del toolbar en nuestro Decorator.
+
+```preview.tsx
+const preview: Preview = {
+  ...
+  decorators: [
+    (Story, context) => {
+      const { theme } = context.globals;
+
+      if (theme === "light") {
+        return <Story />;
+      }
+
+      if (theme === "dark") {
+        return (
+          <div className={"dark-theme"}>
+            <Story />
+          </div>
+        );
+      }
+
+      return (
+        <div>
+          <Story />
+          <div className={"dark-theme"}>
+            <Story />
+          </div>
+        </div>
+      );
+    },
+  ],
+};
+```

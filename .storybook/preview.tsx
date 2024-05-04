@@ -3,6 +3,18 @@ import "../src/index.css";
 import React from "react";
 
 const preview: Preview = {
+  globalTypes: {
+    theme: {
+      description: "Dark or Light mode",
+      defaultValue: "light",
+      toolbar: {
+        title: "Theme",
+        icon: "circlehollow",
+        items: ["light", "dark", "both"],
+        dynamicTitle: true,
+      },
+    },
+  },
   parameters: {
     controls: {
       matchers: {
@@ -12,14 +24,30 @@ const preview: Preview = {
     },
   },
   decorators: [
-    (Story) => (
-      <div>
-        <Story />
-        <div className={"dark-theme"}>
+    (Story, context) => {
+      const { theme } = context.globals;
+
+      if (theme === "light") {
+        return <Story />;
+      }
+
+      if (theme === "dark") {
+        return (
+          <div className={"dark-theme"}>
+            <Story />
+          </div>
+        );
+      }
+
+      return (
+        <div>
           <Story />
+          <div className={"dark-theme"}>
+            <Story />
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
   ],
 };
 
