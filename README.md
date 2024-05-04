@@ -487,3 +487,91 @@ const preview: Preview = {
   ],
 };
 ```
+
+## 03 Mock de Datos con el addon MSW
+
+Documentación Oficial: [Mocking API Services](https://storybook.js.org/docs/writing-stories/build-pages-with-storybook#mocking-api-services)
+Documentación de JSON Placeholder: [Guía](https://jsonplaceholder.typicode.com/guide/)
+
+Vamos a crear un componente que cargue una lista de ToDos utilizando la API de JsonPlaceholder.
+
+```ToDoList
+import React, { useEffect, useState } from "react";
+import { ToDo, ToDoProps } from "../ToDo/ToDo";
+
+export const ToDoList = () => {
+  const [todos, setTodos] = useState<ToDoProps[] | undefined>();
+  const [error, setError] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/todos?_limit=10")
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json);
+        setTodos(json);
+      })
+      .catch(() => setError(true));
+  }, []);
+
+  return (
+    <div>
+      <h1>ToDo List</h1>
+      {error && <p>Error loading todos</p>}
+      {!error && todos?.map((todo) => <ToDo {...todo} />)}
+    </div>
+  );
+};
+```
+
+Ahora actualicemos los tipos en el componente de `ToDo` para que sean igual a JsonPlaceholder.
+
+```ToDo.tsx
+import React, { useState } from "react";
+import styles from "./ToDo.module.css";
+
+export interface ToDoProps {
+  id: number;
+  title: string;
+  completed?: boolean;
+}
+
+export const ToDo = ({
+  id,
+  title,
+  completed: isCompleted = false,
+}: ToDoProps) => {
+  const [completed, setCompleted] = useState<boolean>(isCompleted);
+  return (
+    <div className={styles.toDo}>
+      <input
+        type="checkbox"
+        checked={completed}
+        id={id.toString()}
+        onChange={(e) => setCompleted(e.target.checked)}
+      />
+      <span className={completed ? styles.completed : ""}>{title}</span>
+    </div>
+  );
+};
+```
+
+⚠️ Recuerda actualizar el Story `ToDo.stories.tsx`
+
+Ahora creemos el Story para nuestro componente `ToDoList`
+
+```ToDoList.stories.tsx
+import { Meta } from "@storybook/react";
+import { ToDoList } from "./ToDoList";
+
+const meta = {
+  title: "Components/ToDoList",
+  component: ToDoList,
+} satisfies Meta<typeof ToDoList>;
+
+export default meta;
+
+export const Default = {};
+
+```
+
+Deberías de ver el Story del componente con 10 ToDos.
