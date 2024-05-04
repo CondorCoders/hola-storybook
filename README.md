@@ -493,6 +493,8 @@ const preview: Preview = {
 Documentación Oficial: [Mocking API Services](https://storybook.js.org/docs/writing-stories/build-pages-with-storybook#mocking-api-services)
 Documentación de JSON Placeholder: [Guía](https://jsonplaceholder.typicode.com/guide/)
 
+### Creamos un componente para renderizar una lista de ToDos
+
 Vamos a crear un componente que cargue una lista de ToDos utilizando la API de JsonPlaceholder.
 
 ```ToDoList
@@ -575,3 +577,86 @@ export const Default = {};
 ```
 
 Deberías de ver el Story del componente con 10 ToDos.
+
+### Agregamos la extensión de MSW
+
+Te recomiendo seguir las instrucciones de la página oficial para que estés al día con el proceso de instalación.
+
+[MSW Storybook](https://storybook.js.org/addons/msw-storybook-addon)
+
+En nuestro terminal correr el comando:
+
+```
+npm i msw msw-storybook-addon -D
+```
+
+Generamos el Service Worker en la carpeta pública.
+
+```
+npx msw init public/
+```
+
+Configuremos la extensión en `preview.tsx`:
+
+```preview.tsx
+import { initialize, mswLoader } from "msw-storybook-addon";
+
+// Initialize MSW
+initialize();
+
+const preview: Preview = {
+  // Provide the MSW addon loader globally
+  loaders: [mswLoader],
+  ...
+}
+```
+
+Ahora creamos un mock en nuestro componente `ToDoList` con la extensión de MSW. Para esto necesitaremos los datos falsos que queremos devolver.
+
+Creamos una carpeta `__fixtures__` con un archivo `todos.ts`
+
+```todos.ts
+import { ToDoProps } from "../../ToDo/ToDo";
+
+export const todos: ToDoProps[] = [
+  {
+    id: 1,
+    title: "To Do 1",
+    completed: false,
+  },
+  {
+    id: 2,
+    title: "To Do 2",
+    completed: true,
+  },
+];
+
+```
+
+Dentro de nuestra Story del componente `ToDoList.stories.tsx` agregamos `msw`
+
+```ToDoList.stories.tsx
+import { Meta } from "@storybook/react";
+import { ToDoList } from "./ToDoList";
+import { http, HttpResponse } from "msw";
+import { todos } from "./__fixtures__/todos";
+
+const meta = {
+  title: "Components/ToDoList",
+  component: ToDoList,
+  parameters: {
+    msw: {
+      handlers: [
+        http.get("https://jsonplaceholder.typicode.com/todos", () => {
+          return HttpResponse.json(todos);
+        }),
+      ],
+    },
+  },
+} satisfies Meta<typeof ToDoList>;
+
+export default meta;
+
+export const Default = {};
+
+```

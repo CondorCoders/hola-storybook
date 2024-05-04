@@ -56,8 +56,15 @@
     "@storybook/react-webpack5": "^8.0.9",
     "@storybook/test": "^8.0.9",
     "eslint-plugin-storybook": "^0.8.0",
+    "msw": "^2.2.14",
+    "msw-storybook-addon": "^2.0.1",
     "prop-types": "^15.8.1",
     "storybook": "^8.0.9",
     "webpack": "^5.91.0"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
