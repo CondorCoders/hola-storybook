@@ -8,6 +8,18 @@ const meta = {
     id: "1",
     todo: "Hola Mundo",
   },
+  decorators: [
+    (Story) => (
+      <div style={{ border: "2px solid red" }}>
+        <Story />
+      </div>
+    ),
+    (Story) => (
+      <div style={{ border: "2px solid green" }}>
+        <Story />
+      </div>
+    ),
+  ],
 } satisfies Meta<typeof ToDo>;
 
 export default meta;

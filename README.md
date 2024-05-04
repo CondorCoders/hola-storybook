@@ -257,3 +257,82 @@ export const Completed = {
 ```
 
 #### 🥇 Ejercicio: Agrega una descripción a cada prop y al componente y asegúrate que renderice de manera correcta en la documentación.
+
+## 02 Estilos Globales y Decoradores
+
+### Estilos Globales
+
+Vamos a reemplazar el color del componente `button.css` con una variable de css `--primary`.
+
+```button.css
+.storybook-button--primary {
+  color: white;
+  background-color: var(--primary);
+}
+```
+
+y crear la variable en `index.css`
+
+```index.css
+:root {
+  --primary: #1ea7fd;
+}
+```
+
+Lo más probable es que el color del botón no aparezca en el Story. Para que esto funcione debemos importar los estilos globales a `preview.ts`. Recordemos que `preview.ts` es la configuración del contenedor donde el Story de nuestro componente se renderiza y solo tiene acceso al código en el componente, por lo que es necesario importar cualquier estilo adicional.
+
+```preview.ts
+import type { Preview } from "@storybook/react";
+import "../src/index.css"; <-- importamos css
+
+const preview: Preview = {...};
+
+export default preview;
+```
+
+### Decorators
+
+Documentación oficial: [Storybook Decorators](https://storybook.js.org/docs/writing-stories/decorators#story-decorators)
+
+Los "decorators" en Storybook son funciones que te permiten aplicar comportamientos o envolver componentes con funcionalidades adicionales en un Story. Los decorators se utilizan comúnmente para envolver componentes con ciertas configuraciones, como proveer datos simulados, aplicar estilos globales, o agregar contextos específicos para simular un entorno de aplicación más completo.
+
+⚠️ Al momento de usar `Decorators` debemos cambiar nuestros archivos de `.stories.ts` a `.stories.tsx` ya que usarems `jsx|tsx|html`
+
+Veamos ejemplo:
+
+```ToDo.stories.tsx
+const meta = {
+  ...
+  decorators: [
+    (Story) => (
+      <div style={{border: "2px solid red"}}>
+        <Story />
+      </div>
+    )
+  ]
+} satisfies Meta<typeof ToDo>;
+```
+
+Ahora deberías las Stories del componente `ToDo` con un borde rojo.
+
+Los decorators son un array que puede aceptar varios. Por Ejemplo:
+
+```ToDo.stories.tsx
+const meta = {
+  ...
+  decorators: [
+    (Story) => (
+      <div style={{ border: "2px solid red" }}>
+        <Story />
+      </div>
+    ),
+    (Story) => (
+      <div style={{ border: "2px solid green" }}>
+        <Story />
+      </div>
+    ),
+  ],
+} satisfies Meta<typeof ToDo>;
+```
+
+El orden en que colocarmos los decoradores definirán el orden de renderizado. El borde verde debería envolver el borde rojo.
