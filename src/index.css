@@ -1,11 +1,13 @@
 :root {
   --primary: #1ea7fd;
+  --button-text: white;
   --text: black;
   --grey: #eee;
 }
 
 .dark-theme {
   background-color: #121212;
+  --button-text: black;
   --primary: #b4d7ff;
   --text: white;
   --grey: #282828

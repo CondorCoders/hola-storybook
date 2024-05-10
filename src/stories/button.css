@@ -8,7 +8,7 @@
   line-height: 1;
 }
 .storybook-button--primary {
-  color: white;
+  color: var(--button-text);
   background-color: var(--primary);
 }
 .storybook-button--secondary {

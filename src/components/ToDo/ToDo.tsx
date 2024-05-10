@@ -17,6 +17,7 @@ export const ToDo = ({
     <div className={styles.toDo}>
       <input
         type="checkbox"
+        aria-label={title}
         checked={completed}
         id={id.toString()}
         onChange={(e) => setCompleted(e.target.checked)}

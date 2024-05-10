@@ -1,7 +1,7 @@
 import React from "react";
 import "./button.css";
 
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * Is this the principal call to action on the page?
    */
@@ -39,7 +39,6 @@ export const Button = ({
     : "storybook-button--secondary";
   return (
     <button
-      type="button"
       className={["storybook-button", `storybook-button--${size}`, mode].join(
         " "
       )}

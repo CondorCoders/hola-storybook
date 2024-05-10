@@ -703,3 +703,114 @@ export const Error = {
 };
 
 ```
+
+## 04 Accesibilidad y Testing
+
+### Extensión de Accesibilidad
+
+[Documentación Oficial]: [Accessibility](https://storybook.js.org/addons/@storybook/addon-a11y)
+
+Esta extensión oficial de Storybook te ayuda a detectar errores de accesibilidad y construir mejores componentes.
+
+Instalamos desde el terminal:
+
+```
+npm install @storybook/addon-a11y
+```
+
+Agregamos la extensión a la configuración de Storybook `main.ts`.
+
+```main.ts
+import type { StorybookConfig } from "@storybook/react-webpack5";
+
+const config: StorybookConfig = {
+  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  addons: [
+    ...
+    "@storybook/addon-a11y", <- Agregar extensión
+  ],
+  ...
+};
+export default config;
+
+```
+
+Al ver tus Stories, aparecerá una nueva sección llamada `Accessibility` en los Controlers.
+
+Aquí verás en rojo lo que debes mejorar en tu componente para que sea más accesible. Puedes darle click a ver la documentación donde también te dan sugerencias de cómo mejorarlo.
+
+### Testing con Play()
+
+[Documentación Oficial]: [Play](https://storybook.js.org/docs/writing-stories/play-function#writing-stories-with-the-play-function)
+
+Play en Storybook es una función que permite interactuar con componentes de manera visual dentro del entorno de Storybook. Te permite simular interacciones del usuario con tus componentes y observar cómo se comportan en diferentes estados.
+
+Vamos a agregar un input en `ToDoList` que nos eprmita agregar un todo.
+
+```ToDoList.tsx
+export const ToDoList = () => {
+  const [todos, setTodos] = useState<ToDoProps[] | undefined>();
+  const [error, setError] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/todos?_limit=10")
+      .then((response) => response.json())
+      .then((json) => {
+        setTodos(json);
+      })
+      .catch(() => setError(true));
+  }, []);
+
+  const onSave = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const title = formData.get("todo") as string;
+
+    if (!title) return;
+
+    const newToDo: ToDoProps = {
+      id: (todos?.length || 0) + 1,
+      title,
+      completed: false,
+    };
+
+    setTodos((prev) => prev && [newToDo, ...prev]);
+    e.currentTarget.reset();
+  };
+
+  return (
+    <div>
+      <h1>ToDo List</h1>
+      <form onSubmit={onSave}>
+        <input type="text" name="todo" id="todo" aria-label="todo" />
+        <Button label="Guardar" primary type="submit" />
+      </form>
+      {error && <p>Error loading todos</p>}
+      {!error && todos?.map((todo) => <ToDo {...todo} />)}
+    </div>
+  );
+};
+```
+
+Ahora vamos a agregar `play` al Story
+
+```ToDoList.stories.tsx
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const todoInput = canvas.getByLabelText("todo", { selector: "input" });
+
+    await userEvent.type(todoInput, "Test 4");
+
+    const saveButton = canvas.getByRole("button");
+    await userEvent.click(saveButton);
+
+    const newTodo = canvas.getByLabelText("Test 4", { selector: "input" });
+    await expect(newTodo).toBeInTheDocument();
+  },
+  parameters: {...},
+};
+```
+
+Si todo salió bien, verás como en la pestaña `Interactions` en el area de los Controlers aparecerá los pasos que definimos en `play`.
